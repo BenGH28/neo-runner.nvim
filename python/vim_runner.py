@@ -8,10 +8,12 @@ from enum import Enum
 
 import vim
 
-CPP_EXT1 = ".cpp$"
-CPP_EXT2 = ".cc$"
-C_EXT = ".c$"
-PY_EXT = ".py$"
+CPP_EXT1 = "\.cpp$"
+CPP_EXT2 = "\.cc$"
+C_EXT = "\.c$"
+PY_EXT = "\.py$"
+
+LOG_FILE = "/home/ben/repos/vim-runner/logfile.txt"
 
 
 class FileType(Enum):
@@ -29,10 +31,10 @@ def __determine_file_type(file: str) -> FileType:
     :returns
         filetype(FileType): the type of file
     """
-    match_cpp0 = re.match(CPP_EXT1, file, flags=0)
-    match_cpp1 = re.match(CPP_EXT2, file, flags=0)
-    match_c = re.match(C_EXT, file, flags=0)
-    match_py = re.match(PY_EXT, file, flags=0)
+    match_cpp0 = re.search(CPP_EXT1, file)
+    match_cpp1 = re.search(CPP_EXT2, file)
+    match_c = re.search(C_EXT, file)
+    match_py = re.search(PY_EXT, file)
 
     if match_cpp0 or match_cpp1:
         return FileType.cpp
@@ -46,9 +48,10 @@ def __determine_file_type(file: str) -> FileType:
 def __compile_c_file(file: str) -> None:
     """compile a C file"""
     gcc = "gcc"
-    filename = os.path.basename(file)
-    binaryname = filename.split('.')[0]
+    # filename = os.path.basename(file)
+    binaryname = file.split('.')[0]
     build = f"{gcc} {file} -o {binaryname}"
+    #TODO navigate to file directory not the file itself
     navigate = f"cd {file}"
     cmd = f"{navigate} && {build}"
     os.system(cmd)
@@ -65,20 +68,31 @@ def __compile_cpp_file(file) -> None:
 
 
 def __run_python_script(file) -> None:
-    py = "python3"
-    cmd = f"{py} {file}"
+    python = "python3"
+    cmd = f"{python} {file}"
     os.system(cmd)
-
 
 
 def compile_current_file() -> None:
     """compile/run the current vim buffer if possible"""
-    filepath: str = vim.current.buffer.name
-    filetype = __determine_file_type(filepath)
+    filepath = vim.current.buffer.name
+    if filepath is None or filepath == "":
+        raise Exception(f"{filepath} is None")
 
-    if filetype == FileType.c:
-        __compile_c_file(filepath)
-    elif filetype == FileType.cpp:
-        __compile_cpp_file(filepath)
-    else:
-        __run_python_script(filepath)
+    filetype: FileType = __determine_file_type(filepath)
+
+    with open(LOG_FILE, 'w') as f:
+        f.write(f"{filepath}\n")
+        f.write(f"{filetype}\n")
+
+        if filetype == FileType.c:
+            __compile_c_file(filepath)
+            f.write("compiled C file\n")
+        elif filetype == FileType.cpp:
+            __compile_cpp_file(filepath)
+            f.write("compiled C++ file\n")
+        elif filetype == FileType.py:
+            __run_python_script(filepath)
+            f.write("compiled python file\n")
+        else:
+            f.write(f"not a valid file: {filepath}")

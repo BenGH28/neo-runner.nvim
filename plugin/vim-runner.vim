@@ -7,6 +7,7 @@ endif
 let g:loaded_vim_runner = 1
 
 let s:plugin_root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+
 python3 << EOF
 import sys
 from os.path import normpath, join
@@ -16,6 +17,7 @@ python_root_dir = normpath(join(plugin_root_dir, '..', 'python'))
 sys.path.insert(0, python_root_dir)
 import vim_runner
 EOF
+
 
 function! VimRunner()
 	python3 vim_runner.compile_current_file()
