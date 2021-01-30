@@ -8,6 +8,7 @@ from enum import Enum
 
 import vim
 
+# regex
 CPP_EXT1 = "\.cpp$"
 CPP_EXT2 = "\.cc$"
 C_EXT = "\.c$"
@@ -45,6 +46,23 @@ def __determine_file_type(file: str) -> FileType:
     return FileType.other
 
 
+def __run_commmand_in_term(cmd: str) -> None:
+    """will send cmd to be run in the terminal"""
+    if vim.eval("has('vim')"):
+        # call vim specific terminal stuff
+        pass
+    else:
+        # call nvim specific terminal commands
+        pass
+
+
+def __make_new_display_win() -> None:
+    """ open a new terminal window 1/3 the height of the original"""
+    win_height = vim.current.window.height
+    new_win_height = win_height / 3
+    vim.command(str(new_win_height) + "sp | term")
+
+
 def __compile_c_file(filepath: str) -> None:
     """compile a C file"""
     gcc = "gcc"
@@ -53,9 +71,11 @@ def __compile_c_file(filepath: str) -> None:
 
     navigate = f"cd {directory}"
     build = f"{gcc} {filepath} -o {binaryname}"
+    run = f"./{binaryname}"
 
-    cmd = f"{navigate} && {build}"
-    os.system(cmd)
+    cmd = f"{navigate} && {build} && {run}"
+    __make_new_display_win()
+    __run_commmand_in_term(cmd)
 
 
 def __compile_cpp_file(filepath: str) -> None:
