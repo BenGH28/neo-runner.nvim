@@ -45,31 +45,35 @@ def __determine_file_type(file: str) -> FileType:
     return FileType.other
 
 
-def __compile_c_file(file: str) -> None:
+def __compile_c_file(filepath: str) -> None:
     """compile a C file"""
     gcc = "gcc"
-    # filename = os.path.basename(file)
-    binaryname = file.split('.')[0]
-    build = f"{gcc} {file} -o {binaryname}"
-    #TODO navigate to file directory not the file itself
-    navigate = f"cd {file}"
+    binaryname = filepath.split('.')[0]
+    directory = os.path.dirname(filepath)
+
+    navigate = f"cd {directory}"
+    build = f"{gcc} {filepath} -o {binaryname}"
+
     cmd = f"{navigate} && {build}"
     os.system(cmd)
 
 
-def __compile_cpp_file(file) -> None:
+def __compile_cpp_file(filepath: str) -> None:
     gpp = "g++"
-    filename = os.path.basename(file)
+    filename = os.path.basename(filepath)
     binaryname = filename.split('.')[0]
-    build = f"{gpp} {file} -o {binaryname}"
-    navigate = f"cd {file}"
+    directory = os.path.dirname(filepath)
+
+    navigate = f"cd {directory}"
+    build = f"{gpp} {filepath} -o {binaryname}"
+
     cmd = f"{navigate} && {build}"
     os.system(cmd)
 
 
-def __run_python_script(file) -> None:
+def __run_python_script(filepath: str) -> None:
     python = "python3"
-    cmd = f"{python} {file}"
+    cmd = f"{python} {filepath}"
     os.system(cmd)
 
 
