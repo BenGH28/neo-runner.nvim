@@ -3,7 +3,7 @@ A plugin to run a single c/c++ or python file
 """
 import os
 import re
-import typing
+from typing import Tuple
 from enum import Enum
 
 import vim
@@ -25,25 +25,23 @@ class FileType(Enum):
     py = 3
 
 
-def __determine_file_type(file: str) -> FileType:
+def __determine_file_type() -> Tuple[FileType, str]:
     """determine file type based on file extension
     :params
         file (str): the file to check
     :returns
         filetype(FileType): the type of file
     """
-    match_cpp0 = re.search(CPP_EXT1, file)
-    match_cpp1 = re.search(CPP_EXT2, file)
-    match_c = re.search(C_EXT, file)
-    match_py = re.search(PY_EXT, file)
 
-    if match_cpp0 or match_cpp1:
-        return FileType.cpp
-    if match_c:
-        return FileType.c
-    if match_py:
-        return FileType.py
-    return FileType.other
+    filetype: str = vim.eval('&filetype')
+
+    if filetype == 'python':
+        return FileType.py, filetype
+    if filetype == 'cpp':
+        return FileType.cpp, filetype
+    if filetype == 'c':
+        return FileType.c, filetype
+    return FileType.other, filetype
 
 
 # def __run_commmand_in_term(cmd: str) -> None:
@@ -75,8 +73,8 @@ def __runner_cmd(navigate: str, build: str, run: str):
 
 
 def __maybe_error_out(result: int) -> None:
-    if result:
-        raise Exception("compilation error")
+    # TODO figure out how to tell user compilation failed
+    pass
 
 
 def __compile_c_file(filepath: str) -> None:
@@ -136,20 +134,13 @@ def compile_current_file() -> None:
     if filepath is None or filepath == "":
         raise Exception(f"{filepath} is None")
 
-    filetype: FileType = __determine_file_type(filepath)
+    filetype, ft_str = __determine_file_type()
 
-    with open(LOG_FILE, 'w') as f:
-        f.write(f"{filepath}\n")
-        f.write(f"{filetype}\n")
-
-        if filetype == FileType.c:
-            __compile_c_file(filepath)
-            f.write("compiled C file\n")
-        elif filetype == FileType.cpp:
-            __compile_cpp_file(filepath)
-            f.write("compiled C++ file\n")
-        elif filetype == FileType.py:
-            __run_python_script(filepath)
-            f.write("compiled python file\n")
-        else:
-            f.write(f"not a valid file: {filepath}")
+    if filetype is FileType.c:
+        __compile_c_file(filepath)
+    elif filetype is FileType.cpp:
+        __compile_cpp_file(filepath)
+    elif filetype is FileType.py:
+        __run_python_script(filepath)
+    else:
+        print(f"VimRunner doesn't support `{ft_str}` file type")
