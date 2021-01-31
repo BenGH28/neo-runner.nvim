@@ -74,6 +74,11 @@ def __runner_cmd(navigate: str, build: str, run: str):
     return cmd
 
 
+def __maybe_error_out(result: int) -> None:
+    if result:
+        raise Exception("compilation error")
+
+
 def __compile_c_file(filepath: str) -> None:
     """
     compile a C file and run it non-interactively
@@ -90,6 +95,7 @@ def __compile_c_file(filepath: str) -> None:
 
     cmd = __runner_cmd(navigate, build, run)
     result = os.system(cmd)
+    __maybe_error_out(result)
     __open_new_display_win(binaryname)
 
 
@@ -108,7 +114,8 @@ def __compile_cpp_file(filepath: str) -> None:
     run = f"./{binaryname}"
 
     cmd = __runner_cmd(navigate, build, run)
-    os.system(cmd)
+    result = os.system(cmd)
+    __maybe_error_out(result)
     __open_new_display_win(binaryname)
 
 
