@@ -46,55 +46,81 @@ def __determine_file_type(file: str) -> FileType:
     return FileType.other
 
 
-def __run_commmand_in_term(cmd: str) -> None:
-    """will send cmd to be run in the terminal"""
-    if vim.eval("has('vim')"):
-        # call vim specific terminal stuff
-        pass
-    else:
-        # call nvim specific terminal commands
-        pass
+# def __run_commmand_in_term(cmd: str) -> None:
+#     """will send cmd to be run in the terminal"""
+#     if vim.eval("has('vim')"):
+#         # call vim specific terminal stuff
+#         pass
+#     else:
+#         # call nvim specific terminal commands
+#         # TODO get the terminal buffer and then do this stuff
+#         vim.command("normal! echo 'trying to print to the terminal'")
+#         vim.command(f'noraml! let @z = "{cmd}\n" | normal! "zp ')
 
 
-def __make_new_display_win() -> None:
+def __open_new_display_win(binaryname: str) -> None:
     """ open a new terminal window 1/3 the height of the original"""
     win_height = vim.current.window.height
     new_win_height = win_height / 3
-    vim.command(str(new_win_height) + "sp | term")
+    vim.command(str(new_win_height) + "sp | term " + binaryname)
+
+
+def __make_binary_name(filepath: str):
+    return filepath.split('.')[0]
+
+
+def __runner_cmd(navigate: str, build: str, run: str):
+    cmd = f"{navigate} && {build} && {run}"
+    return cmd
 
 
 def __compile_c_file(filepath: str) -> None:
-    """compile a C file"""
+    """
+    compile a C file and run it non-interactively
+    :params
+        filepath: the full path to the C file
+    """
     gcc = "gcc"
-    binaryname = filepath.split('.')[0]
+    binaryname = __make_binary_name(filepath)
     directory = os.path.dirname(filepath)
 
     navigate = f"cd {directory}"
     build = f"{gcc} {filepath} -o {binaryname}"
     run = f"./{binaryname}"
 
-    cmd = f"{navigate} && {build} && {run}"
-    __make_new_display_win()
-    __run_commmand_in_term(cmd)
+    cmd = __runner_cmd(navigate, build, run)
+    result = os.system(cmd)
+    __open_new_display_win(binaryname)
 
 
 def __compile_cpp_file(filepath: str) -> None:
+    """
+    compile a c++ file and run it non-interactively
+    :params
+        filepath: the full path to the C++ file
+    """
     gpp = "g++"
-    filename = os.path.basename(filepath)
-    binaryname = filename.split('.')[0]
+    binaryname = __make_binary_name(filepath)
     directory = os.path.dirname(filepath)
 
     navigate = f"cd {directory}"
     build = f"{gpp} {filepath} -o {binaryname}"
+    run = f"./{binaryname}"
 
-    cmd = f"{navigate} && {build}"
+    cmd = __runner_cmd(navigate, build, run)
     os.system(cmd)
+    __open_new_display_win(binaryname)
 
 
 def __run_python_script(filepath: str) -> None:
+    """
+    run a python file non-interactively
+    :params
+        filepath: the full path to the python file
+    """
     python = "python3"
     cmd = f"{python} {filepath}"
-    os.system(cmd)
+    __open_new_display_win(cmd)
 
 
 def compile_current_file() -> None:
