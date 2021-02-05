@@ -11,8 +11,8 @@ from enum import Enum
 
 import vim
 
-C_COMPILER = 'gcc'
-CPP_COMPILER = 'g++'
+C_COMPILER = vim.eval("get(g:, 'runner_c_compiler', 'gcc')")
+CPP_COMPILER = vim.eval("get(g:, 'runner_cpp_compiler', 'g++')")
 
 
 class FileType(Enum):
@@ -49,7 +49,10 @@ def __open_new_display_win(command: str) -> None:
     """
     win_height = vim.current.window.height
     new_win_height = win_height / 3
-    vim.command(str(new_win_height) + "sp | term " + command)
+    if vim.eval("exists('v:versionlong')"):
+        pass
+    else:
+        vim.command(str(new_win_height) + "sp | term " + command)
 
 
 def __make_binary_name(filepath: str):
@@ -74,22 +77,23 @@ def __runner_cmd(navigate: str, build: str, run: str):
     return cmd
 
 
-def __compile_c_cpp_file(compiler_to_use: str, filepath: str) -> None:
+def __compile_c_cpp_file(compiler_to_use: str,  filepath: str, options: str = "") -> None:
     """
     compile a c++ file and run it non-interactively
     :params
-        compiler: the compiler you wish to use (should be one of gcc, g++ or clang)
-        filepath: the full path to the C++ file
+        compiler_to_use: the compiler you wish to use (should be one of gcc, g++ or clang)
+        filepath: the full path to the C/C++ file
     """
     compiler = compiler_to_use
     binaryname = __make_binary_name(filepath)
     directory = os.path.dirname(filepath)
 
     navigate = f"cd {directory}"
-    build = f"{compiler} {filepath} -o {binaryname}"
-    run = f"{binaryname}"
+    build = f"{compiler} {options} {filepath} -o {binaryname}"
+    run = binaryname
 
     cmd = __runner_cmd(navigate, build, run)
+    print(cmd)
     __open_new_display_win(cmd)
 
 
