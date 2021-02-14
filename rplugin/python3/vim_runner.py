@@ -48,7 +48,7 @@ class NeoRunner(object):
         new_win_height = win_height / 3
         opts = {'height': new_win_height}
         # self.vim.command(str(new_win_height) + "sp | term " + command)
-        self.vim.funcs.termopen(command,opts)
+        self.vim.funcs.termopen(command, opts)
 
     def __make_binary_name(self, filepath: str):
         """
@@ -105,7 +105,6 @@ class NeoRunner(object):
         if filepath is None or filepath == "":
             raise Exception(f"{filepath} is None")
         self.__compile_and_run(filepath)
-
 
     @pynvim.command('NeoRunner')
     def NeoRunner(self):
