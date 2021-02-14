@@ -1,4 +1,4 @@
 .vim/
-python/__pycache__/
+*/__pycache__/
 testfiles/*
 logfile.txt
