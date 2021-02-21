@@ -9,18 +9,49 @@ import pynvim
 
 
 @pynvim.plugin
-class NeoRunner(object):
+class NeoRunner():
+    """The NeoVim Plugin"""
 
     def __init__(self, vim) -> None:
         self.vim = vim
 
     @property
-    def C_COMPILER(self): return self.vim.funcs.get(
-        'g:', 'runner_c_compiler', 'gcc')
+    def c_compiler(self) -> str:
+        """return the user defined C compiler or the default if none exist"""
+        try:
+            return self.vim.api.get_var('runner_c_compiler')
+        except:
+            return 'gcc'
 
     @property
-    def CPP_COMPILER(self): return self.vim.funcs.get(
-        'g:', 'runner_cpp_compiler', 'g++')
+    def c_options(self) -> str:
+        """
+        Get the user defined options for the compiler or return empty string if not defined
+        :return compiler options as str
+        """
+        try:
+            return self.vim.api.get_var('runner_c_options')
+        except:
+            return ''
+
+    @property
+    def cpp_compiler(self) -> str:
+        """return the user defined C++ compiler or the default if none exist"""
+        try:
+            return self.vim.api.get_var('runner_cpp_compiler')
+        except:
+            return 'g++'
+
+    @property
+    def cpp_options(self) -> str:
+        """
+        Get the user defined options for the compiler or return empty string if not defined
+        :return compiler options as str
+        """
+        try:
+            return self.vim.api.get_var('runner_cpp_options')
+        except:
+            return ''
 
     def __compile_and_run(self, filepath: str) -> None:
         """determine file type based on file extension
@@ -32,11 +63,12 @@ class NeoRunner(object):
         if filetype == 'python':
             self.__run_python_script(filepath)
         elif filetype == 'cpp':
-            self.__compile_c_cpp_file(self.CPP_COMPILER, filepath)
+            self.__compile_c_cpp_file(self.cpp_compiler, filepath)
         elif filetype == 'c':
-            self.__compile_c_cpp_file(self.C_COMPILER, filepath)
+            self.__compile_c_cpp_file(self.c_compiler, filepath)
         else:
-            print(f"NeoRunner doesn't support `{filetype}` file type")
+            self.vim.api.err_writeln(
+                f"NeoRunner doesn't support `{filetype}` file type")
 
     def __run_command_in_terminal(self, command: str) -> None:
         """
@@ -46,9 +78,7 @@ class NeoRunner(object):
         """
         win_height = self.vim.current.window.height
         new_win_height = win_height / 3
-        opts = {'height': new_win_height}
-        # self.vim.command(str(new_win_height) + "sp | term " + command)
-        self.vim.funcs.termopen(command, opts)
+        self.vim.command(str(new_win_height) + "sp | term " + command)
 
     def __make_binary_name(self, filepath: str):
         """
@@ -67,11 +97,14 @@ class NeoRunner(object):
             build: the specific build command for the file
             run: the command to execute binary
         """
-        return f"{navigate} && {build} && {run}"
+        cmd = f"{navigate} && {build} && {run}"
+        with open('/home/ben/repos/vim-runner/logfile.txt', 'w+') as f:
+            f.write(cmd)
+        return cmd
 
     def __compile_c_cpp_file(self, compiler_to_use: str,  filepath: str, options: str = "") -> None:
         """
-        compile a c++ file and run it non-interactively
+        compile a C/C++ file and run it non-interactively
         :params
             compiler_to_use: the compiler you wish to use (should be one of gcc, g++ or clang)
             filepath: the full path to the C/C++ file
@@ -89,7 +122,7 @@ class NeoRunner(object):
 
     def __run_python_script(self, filepath: str) -> None:
         """
-        Run a pythn file
+        Run a python file
         :params
             filepath: the full path to the python file
         """
@@ -107,5 +140,6 @@ class NeoRunner(object):
         self.__compile_and_run(filepath)
 
     @pynvim.command('NeoRunner')
-    def NeoRunner(self):
+    def NeoRunner(self) -> None:
+        """the NeoVim command to runner"""
         self.compile_current_file()
