@@ -27,7 +27,7 @@ Plug 'BenGH28/neo-runner.nvim', {'on': 'UpdateRemotePlugins'}
 
 ## Usage
 
-![Imgur](https://imgur.com/a/Y4DIVO5)
+![Imgur](https://imgur.com/gallery/wnftdeG)
 
 ```vim
 :NeoRunner
