@@ -4,9 +4,9 @@ Inspired by VSCode's Code Runner this aims to emulate accomplish similar things
 but at a far smaller scale.
 """
 import os
+from typing import Tuple
 
 import pynvim
-from typing import Tuple
 
 
 @pynvim.plugin
@@ -37,6 +37,7 @@ class NeoRunner():
 
     @property
     def filetype(self) -> str:
+        """the current filetype"""
         return self.vim.eval('&filetype')
 
     @property
@@ -114,9 +115,6 @@ class NeoRunner():
     def __compile_c_cpp_file(self) -> None:
         """
         compile a C/C++ file and run it non-interactively
-        :params
-            compiler_to_use: the compiler you wish to use (should be one of gcc, g++ or clang)
-            filepath: the full path to the C/C++ file
         """
         compiler, options = self.__get_c_or_cpp_properties()
         binaryname = self.__make_binary_name()
@@ -132,14 +130,15 @@ class NeoRunner():
     def __run_python_script(self) -> None:
         """
         Run a python file
-        :params
-            filepath: the full path to the python file
         """
         cmd = f"{self.python_interpreter} {self.python_options} {self.filepath}"
         self.__run_command_in_terminal(cmd)
 
     @property
     def func_dict(self) -> dict:
+        """
+        A dictionary of filetypes mapped to their appropriate execution functions.
+        """
         dictionary = {
             'cpp': self.__compile_c_cpp_file,
             'c': self.__compile_c_cpp_file,
@@ -152,13 +151,11 @@ class NeoRunner():
         :params
             filepath: the file to check
         """
-
-        if self.filetype == 'python':
-            self.__run_python_script()
-        elif self.filetype == 'cpp':
-            self.__compile_c_cpp_file()
-        elif self.filetype == 'c':
-            self.__compile_c_cpp_file()
+        if self.filetype in self.func_dict:
+            for item in self.func_dict:
+                if item == self.filetype:
+                    func = self.func_dict[item]
+                    func()
         else:
             self.vim.api.err_writeln(
                 f"NeoRunner doesn't support `{self.filetype}` file type")
