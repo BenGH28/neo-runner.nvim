@@ -1,0 +1,61 @@
+*NeoRunner.txt* Plugin for running your current C/C++ or Python Buffer
+
+Table of Contents
+================================================================
+NeoRunner
+|NeoRunner-Command|
+|NeoRunner-Settings|
+-|NeoRunner-C/C++|
+-|NeoRunner-Python|
+================================================================
+
+
+*NeoRunner-Command*
+`:NeoRunner`
+	Will compile and execute the current buffer in a new
+	terminal window at the bottom of the screen.
+
+*NeoRunner-C/C++* 			*NeoRunner-Settings*
+You have the option of specifying the correct compiler and
+compiler options with global variables.
+
+Defaults:
+	C compiler: gcc
+	C++ compiler: g++
+
+You can specify your preferred compiler by adding the variables
+below to your init.vim.
+
+Specify C/C++ compiler:
+>
+	"user's desired C compiler
+	let g:runner_c_compiler = 'clang'
+
+	"user's desired C++ compiler
+	let g:runner_cpp_compiler = 'clang++'
+<
+
+NeoRunner doesn't define any options for your compiler.  If you
+wish to have options for your compilation you can do so with the
+variables below.
+
+Specify C/C++ compiler options:
+>
+	"user's C compiler options
+	let g:runner_c_options = '-std=c99 -Wall'
+
+	"user's C++ compiler options
+	let g:runner_cpp_options = '-std=c++11 -Wall'
+<
+
+*NeoRunner-Python*
+
+By default NeoRunner will operate under `python3` but you can
+customize this with the variable below.
+>
+	let g:runner_python_ex = 'python3'
+<
+To add any options for python you can use the following variable:
+>
+	let g:runner_python_options = '-I'
+<
