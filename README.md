@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="https://www.flaticon.com/svg/vstatic/svg/3893/3893735.svg?token=exp=1613969239~hmac=6d3092b4dc2e923a2c4f8b37609203e3" alt="Markdownify" width="250">
+  <img src="https://www.flaticon.com/svg/3893/3893735.svg" alt="Markdownify" width="250">
   <br>
 	<em>neo-runner.nvim</em>
   <br>
