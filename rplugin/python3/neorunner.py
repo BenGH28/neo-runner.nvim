@@ -135,7 +135,7 @@ class NeoRunner():
         self.__run_command_in_terminal(cmd)
 
     @property
-    def func_dict(self) -> dict:
+    def filetypes_to_functions(self) -> dict:
         """
         A dictionary of filetypes mapped to their appropriate execution functions.
         """
@@ -151,11 +151,9 @@ class NeoRunner():
         :params
             filepath: the file to check
         """
-        if self.filetype in self.func_dict:
-            for item in self.func_dict:
-                if item == self.filetype:
-                    func = self.func_dict[item]
-                    func()
+        if self.filetype in self.filetypes_to_functions:
+            compile_func = self.filetypes_to_functions[self.filetype]
+            compile_func()
         else:
             self.vim.api.err_writeln(
                 f"NeoRunner doesn't support `{self.filetype}` file type")

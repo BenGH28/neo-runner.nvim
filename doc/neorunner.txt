@@ -23,8 +23,8 @@ Defaults:
 	C compiler: gcc
 	C++ compiler: g++
 
-You can specify your preferred compiler by adding the variables
-below to your init.vim.
+To change NeoRunner's compiler to `clang` or some other compiler
+you can use the variables below in you init.vim
 
 Specify C/C++ compiler:
 >
@@ -55,7 +55,8 @@ customize this with the variable below.
 >
 	let g:runner_python_ex = 'python3'
 <
-To add any options for python you can use the following variable:
+NeoRunner doesn't define any options for `python3`. You can
+define your own with the variable below.
 >
-	let g:runner_python_options = '-I'
+	let g:runner_python_options = ''
 <

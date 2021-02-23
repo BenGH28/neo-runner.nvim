@@ -17,17 +17,26 @@ Inspired by VS Code's [Code Runner](https://github.com/formulahendry/vscode-code
 Should I feel the need or if there is any demand for this plugin
 I can add more.
 
+## Requirements
+
+Use `:checkhealth` to see if you meet the requirements below.
+- neovim
+- python3
+- [pynvim](https://github.com/neovim/pynvim)
+
 ## Installation
 
 Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-Plug 'BenGH28/neo-runner.nvim', {'on': 'UpdateRemotePlugins'}
+Plug 'BenGH28/neo-runner.nvim', {'do': ':UpdateRemotePlugins'}
 ```
+
+Once you `:PlugInstall` run `:UpdateRemotePlugins`
 
 ## Usage
 
-![neo-runner demonstration](https://i.imgur.com/QSmS2Ld.gif)
+<img src=https://i.imgur.com/QSmS2Ld.gif width=600>
 
 ```vim
 :NeoRunner
@@ -35,24 +44,23 @@ Plug 'BenGH28/neo-runner.nvim', {'on': 'UpdateRemotePlugins'}
 
 The lone command that will compile and execute your code.
 
-## Customisation
+## Config
 
 ***neo-runner*** uses `gcc`, `g++` and `python3` by default for
 execution.
 
-To customise the functionality of ***neo-runner*** you can add
-something like the following to your `init.vim`
+Example config
 
 ```vim
 "C/C++
-let g:runner_c_compiler = 'clang'
-let g:runner_cpp_compiler = 'clang++'
+let g:runner_c_compiler = 'gcc'
+let g:runner_cpp_compiler = 'g++'
 let g:runner_c_options = '-std=c99 -Wall'
 let g:runner_cpp_options = '-std=c++11 -Wall'
 
 "Python
-let g:runner_python_ex = 'python'
-let g:runner_python_options = '-I'
+let g:runner_python_ex = 'python3'
+let g:runner_python_options = ''
 ```
 
 ## Credits
